@@ -12,9 +12,20 @@ ExternalProject_Add(pistache.io
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
 )
 
-include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
-link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
+include_directories(
+    ${EXTERNAL_INSTALL_LOCATION}/include
+)
+link_directories(
+    ${EXTERNAL_INSTALL_LOCATION}/lib
+)
 
-add_executable(wetron-rest-backend main.cpp)
-add_dependencies(wetron-rest-backend pistache.io)
-target_link_libraries(wetron-rest-backend ${CMAKE_SOURCE_DIR}/build/external/lib/libnet_static.a pthread)
+add_executable(wetron-rest-backend
+    main.cpp
+)
+add_dependencies(wetron-rest-backend
+    pistache.io
+)
+target_link_libraries(wetron-rest-backend
+    libnet_static.a
+    pthread
+)
