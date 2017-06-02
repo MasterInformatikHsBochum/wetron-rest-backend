@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include <pistache/http.h>
 #include <pistache/router.h>
 #include <pistache/endpoint.h>
@@ -29,11 +31,17 @@ private:
     void setupRoutes() {
         using namespace Net::Rest;
 
-        // get list of available sessions
+        // Gets all sessions
         Routes::Get(router, "/sessions", Routes::bind(&ApiEndpoint::getSessions, this));
 
-        // create a new session
-        Routes::Post(router, "/session", Routes::bind(&ApiEndpoint::createSession, this));
+        // Creates a session
+        Routes::Post(router, "/sessions", Routes::bind(&ApiEndpoint::createSession, this));
+
+        // Gets a session by id
+        Routes::Get(router, "/sessions/:id", Routes::bind(&ApiEndpoint::getSessionById, this));
+
+        // Joins a session
+        Routes::Put(router, "/sessions/:id", Routes::bind(&ApiEndpoint::joinSession, this));
     }
 
     void getSessions(const Net::Rest::Request& request, Net::Http::ResponseWriter response) {
@@ -41,7 +49,23 @@ private:
     }
 
     void createSession(const Net::Rest::Request& request, Net::Http::ResponseWriter response) {
-        response.send(Net::Http::Code::Ok, "{\"session\":{\"uid\":\"68b329da9893e34099c7d8ad5cb9c940\",\"host\":\"127.0.0.1\",\"port\":1884,\"channel\":\"WeTron/sesion/68b329da9893e34099c7d8ad5cb9c940\"}}");
+        response.send(Net::Http::Code::Ok, "{\"session\":{\"id\":\"68b329da9893e34099c7d8ad5cb9c940\"}}");
+    }
+
+    void getSessionById(const Net::Rest::Request& request, Net::Http::ResponseWriter response) {
+        std::string id = request.param(":id").as<std::string>();
+
+        std::stringstream ss;
+        ss << "{\"session\":{\"id\":\"" << id << "\"\"joinedPlayers\":0,\"maxPlayers\":4}}";
+        response.send(Net::Http::Code::Ok, ss.str());
+    }
+
+    void joinSession(const Net::Rest::Request& request, Net::Http::ResponseWriter response) {
+        std::string id = request.param(":id").as<std::string>();
+
+        std::stringstream ss;
+        ss << "{\"session\":{\"id\":\"" << id << "\",\"host\":\"127.0.0.1\",\"port\":1883,\"websocketPort\":9001,\"channel\":\"WeTron/sesion/" << id << "\"},\"user\":{\"id\":\"897316929176464ebc9ad085f31e7284\"}}";
+        response.send(Net::Http::Code::Ok, ss.str());
     }
 
     std::shared_ptr<Net::Http::Endpoint> httpEndpoint;
