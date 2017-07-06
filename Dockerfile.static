@@ -1,0 +1,7 @@
+FROM scratch
+EXPOSE 8080
+
+ADD main /
+
+ENV PORT=8080
+CMD ["/main"]
